@@ -1,28 +1,34 @@
 const express = require('express');
-
+const connectDB = require('./config/database')
 const app = express();
+const User = require('./models/user')
 
-app.get("/admin/getAllData", (req, res, next) => {
-    // handle when db call
+app.post("/signup", async (req, res) => {
+    const user = new User({
+        firstName: "Virat",
+        lastName: "Kohali",
+        emailId: "virat@kohali.com",
+        age: 50,
+        password: "Virat@123"
+    });
     try{
-    throw new Error("FGDSSGFs");
-     res.send("admin data fetched")
-     next();
+    await user.save();
+    res.send("User added successfully!");
     }
     catch(err){
-        res.status(500).send("Some error accure contact support team")
-    }
-})
-
-// handle error globally - if any error in our app then show error from here
-app.use('/', (err, req, res, next) => {
-    if(err){
-        res.status(500).send("Something went wrong")
+        res.status(400).send("Error saving user ", err.message)
     }
 })
 
 
-app.listen(3000, () => {
-    console.log("Our server start at port 3000");
-    
+
+connectDB().then(() => {
+    console.log("Database connection established...");
+    app.listen(3000, () => {
+        console.log("Our server start at port 3000");
+
+    })
 })
+    .catch(err => {
+        console.log("Database cannot be cannected!!");
+    })
