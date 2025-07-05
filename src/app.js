@@ -1,22 +1,24 @@
 const express = require('express');
 
 const app = express();
-const {adminAuth, userAuth} = require('./utils/auth')
-
-app.use('/admin', adminAuth )
 
 app.get("/admin/getAllData", (req, res, next) => {
-   res.send("admin data fetched")
-   next();
+    // handle when db call
+    try{
+    throw new Error("FGDSSGFs");
+     res.send("admin data fetched")
+     next();
+    }
+    catch(err){
+        res.status(500).send("Some error accure contact support team")
+    }
 })
 
-app.get('/user', userAuth, (req, res) => {
-    res.send("User data fetched")
-})
-
-app.post('/admin/deleteUser', (req, res) => {
-    console.log("Delete user")
-    res.send("Delete Admin user")
+// handle error globally - if any error in our app then show error from here
+app.use('/', (err, req, res, next) => {
+    if(err){
+        res.status(500).send("Something went wrong")
+    }
 })
 
 
