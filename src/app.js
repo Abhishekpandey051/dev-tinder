@@ -12,7 +12,7 @@ app.post("/signup", async (req, res) => {
     res.send("User added successfully!");
     }
     catch(err){
-        res.status(400).send("Error saving user ", err.message)
+        res.status(400).send("Error saving user " + err.message)
     }
 })
 
@@ -28,6 +28,31 @@ app.get("/user", async (req, res) => {
     }
     catch(err){
         res.status(404).send("Something went wrong!!")
+    }
+})
+
+app.delete('/user', async(req, res) => {
+    const userId = req.body.userId
+    try{
+        const user = await User.findByIdAndDelete(userId);
+        res.send("User deleted successfully")
+    }
+    catch(err){
+        res.status(404
+
+        ).send("Something wend wrong")
+    }
+})
+// need to update document using user email id
+app.patch("/user", async(req, res) => {
+    const userId = req.body.userId
+    const data = req.body
+    try{
+       const user = await User.findByIdAndUpdate({_id:userId}, data,{retutnDocument: 'before', runValidators: true} )
+       console.log(user)
+        res.send("User upadate successfully")
+    }catch(err){
+        res.status(404).send("Update failed " + err.message)
     }
 })
 
