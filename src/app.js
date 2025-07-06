@@ -3,20 +3,41 @@ const connectDB = require('./config/database')
 const app = express();
 const User = require('./models/user')
 
+app.use(express.json());
+
 app.post("/signup", async (req, res) => {
-    const user = new User({
-        firstName: "Virat",
-        lastName: "Kohali",
-        emailId: "virat@kohali.com",
-        age: 50,
-        password: "Virat@123"
-    });
+    const user = new User(req.body);
     try{
     await user.save();
     res.send("User added successfully!");
     }
     catch(err){
         res.status(400).send("Error saving user ", err.message)
+    }
+})
+
+app.get("/user", async (req, res) => {
+    const userEmail = req.body.emailId;
+    try{
+        const getUser = await User.findOne({emailId:userEmail});
+        if(getUser.length === 0){
+            res.status(404).send("User not found")
+        }else{
+        res.send(getUser)
+        }
+    }
+    catch(err){
+        res.status(404).send("Something went wrong!!")
+    }
+})
+
+
+app.get("/feed", async(req, res) => {
+    try{
+        const user = await User.find({})
+        res.send(user)
+    }catch(err){
+        res.status(404).send("Something went wrong")
     }
 })
 
