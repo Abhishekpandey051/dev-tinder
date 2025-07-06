@@ -44,10 +44,18 @@ app.delete('/user', async(req, res) => {
     }
 })
 // need to update document using user email id
-app.patch("/user", async(req, res) => {
-    const userId = req.body.userId
+app.patch("/user/:userId", async(req, res) => {
+    const userId = req.params?.userId
     const data = req.body
     try{
+        const ALLOWED_UPDATE = ["gender", "age", "skill", "photoUrl", "about", ]
+        const isUpdateAllow = Object.keys(data).every((k) => ALLOWED_UPDATE.includes(k))
+        if(!isUpdateAllow){
+            throw new Error("Update not allow")
+        }
+        if(data.skill.length > 10){
+            throw new Error("Skill cannot be more than 10")
+        }
        const user = await User.findByIdAndUpdate({_id:userId}, data,{retutnDocument: 'before', runValidators: true} )
        console.log(user)
         res.send("User upadate successfully")
