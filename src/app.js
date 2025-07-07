@@ -2,17 +2,26 @@ const express = require('express');
 const connectDB = require('./config/database')
 const app = express();
 const User = require('./models/user')
-
+const {validateSignUpData} = require('./utils/validation') 
+const bcrypt = require('bcrypt');
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-    const user = new User(req.body);
     try{
+    validateSignUpData(req)
+    const {firstName, lastName, emailId, password} = req.body;
+    const passwordHash = await bcrypt.hash(password, 10);
+    const user = new User({
+        firstName,
+        lastName,
+        emailId,
+        password: passwordHash
+    });
     await user.save();
     res.send("User added successfully!");
     }
     catch(err){
-        res.status(400).send("Error saving user " + err.message)
+        res.status(400).send("ERROR :" + err.message)
     }
 })
 
@@ -48,7 +57,7 @@ app.patch("/user/:userId", async(req, res) => {
     const userId = req.params?.userId
     const data = req.body
     try{
-        const ALLOWED_UPDATE = ["gender", "age", "skill", "photoUrl", "about", ]
+        const ALLOWED_UPDATE = ["gender", "age", "skill", "photoUrl", "about", "password" ]
         const isUpdateAllow = Object.keys(data).every((k) => ALLOWED_UPDATE.includes(k))
         if(!isUpdateAllow){
             throw new Error("Update not allow")
@@ -58,7 +67,7 @@ app.patch("/user/:userId", async(req, res) => {
         }
        const user = await User.findByIdAndUpdate({_id:userId}, data,{retutnDocument: 'before', runValidators: true} )
        console.log(user)
-        res.send("User upadate successfully")
+        res.send("User upadate successfully " + user)
     }catch(err){
         res.status(404).send("Update failed " + err.message)
     }
