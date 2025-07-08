@@ -39,10 +39,10 @@ app.post("/login", async (req, res) => {
             throw new Error("Invalid credentials ")
         }
 
-        const isPassworsValid = await bcrypt.compare(password, user.password);
+        const isPassworsValid = await user.validatePassword(password)
         if (isPassworsValid) {
-            const validateToken = await jwt.sign({ _id: user._id }, "Abhi@123", {expiresIn: "0d"});
-            res.cookie("token", validateToken)
+            const token = await user.getJWT();
+            res.cookie("token", token)
             res.send("Login successfull!!")
         } else {
             throw new Error("Invalid credential")
@@ -51,6 +51,21 @@ app.post("/login", async (req, res) => {
     }
     catch (err) {
         res.status(404).send("ERROR :" + err.message)
+    }
+})
+
+// Logout API
+
+app.post("/logout", async(req,res) => {
+    try{
+        const cookis = req.cookies;
+        const {token} = cookis
+        res.cookie(token.remove)
+        console.log((token));
+        
+    }
+    catch(err){
+        res.status(404).send("ERROR: " + err.message)
     }
 })
 
