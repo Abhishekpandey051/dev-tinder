@@ -67,7 +67,7 @@ const userSchema = mongoose.Schema({
         trim: true
     },
     skill: {
-        trype: [String]
+        type: [String]
     }
 },
 {
