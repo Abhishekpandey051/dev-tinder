@@ -41,7 +41,7 @@ authRouter.post("/login", async (req, res) => {
                 expires: new Date(Date.now() + 8 * 3600000),  // cookie will be removed after 8 hours
                 httpOnly: true
             })
-            res.send("Login successfull!!")
+            res.json({message: "Login successfull", user})
         } else {
             throw new Error("Invalid credential")
         }
@@ -52,14 +52,11 @@ authRouter.post("/login", async (req, res) => {
 })
 
 // Logout API
-authRouter.post("/logout", userAuth, async(req, res) => {
-    try{
-        res.cookie("token", null, {expires: new Date(Date.now())})
-        res.send("Logout successfull")
-    }
-    catch(err){
-        res.status(404).send("ERROR : " + err.message);
-    }
-})
+authRouter.post("/logout", async (req, res) => {
+  res.cookie("token", null, {
+    expires: new Date(Date.now()),
+  });
+  res.json({message: "Logout Successful!!"});
+});;
 
 module.exports = authRouter

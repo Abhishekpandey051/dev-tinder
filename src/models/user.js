@@ -63,7 +63,7 @@ const userSchema = mongoose.Schema({
         type: String,
         default: "This is a default about of thes user!",
         minLength: 10,
-        maxLength: 100,
+        maxLength: 500,
         trim: true
     },
     skill: {
